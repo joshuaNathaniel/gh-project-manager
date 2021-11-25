@@ -11,13 +11,10 @@ USAGE
 FLAGS
   --help, -h        Show help for command
   --legacy          Set project as legacy
-  --project         Set project number
 
 EXAMPLES
-  $ gh project-manager view issues user
-  $ gh project-manager view issues user --legacy
-  $ gh project-manager view issues user --project 1
-  $ gh project-manager view issues user --project --legacy
+  $ gh project-manager view issues user 1
+  $ gh project-manager view issues user 4 --legacy
 
 LEARN MORE
   Use 'gh project-manager view issues user --help' for more information about a command.

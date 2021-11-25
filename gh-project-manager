@@ -10,7 +10,7 @@ USAGE
 
 COMMANDS
   add:              Add issues to project
-  init:             Initialize a new project (beta)
+  init:             Initialize a new project
   view:             View project specific properties and children
 
 FLAGS
