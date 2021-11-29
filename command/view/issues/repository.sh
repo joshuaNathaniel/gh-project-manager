@@ -1,8 +1,13 @@
 #!/usr/bin/env bash
 set -e
 
+if [ -z "$4" ]; then
+  OWNER=$(gh repo view --json owner --jq .owner.login)
+else
+  OWNER=$4
+fi
+
 REPO=$(gh repo view --json name --jq .name)
-OWNER=$(gh repo view --json name,owner --jq .owner.login)
 PROJECT_NUM=$1
 STATUS_TYPES=$3
 
