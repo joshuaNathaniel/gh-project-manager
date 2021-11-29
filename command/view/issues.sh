@@ -53,7 +53,7 @@ showProjectTypeMenu() {
         break
         ;;
       "Repository")
-        PROJECT_TYPE=repo
+        PROJECT_TYPE=repository
         break
         ;;
       "Quit")
