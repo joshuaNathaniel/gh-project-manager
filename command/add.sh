@@ -15,8 +15,9 @@ FLAGS
   --help, -h        Show help for command
 
 EXAMPLES
-  $ gh project-manager add issues org 1 $(cat data.json)
-  $ gh project-manager add issues user 98 $(cat data.json)
+  $ gh project-manager add issues
+  $ gh project-manager add issues --project-type org --project-num 1 --path ./data.json
+  $ gh project-manager add issues --project-type user --project-num 98 --path /etc/data.json
 
 LEARN MORE
   Use 'gh project-manager add <command> --help' for more information about a command.
