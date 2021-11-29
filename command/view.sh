@@ -16,9 +16,10 @@ FLAGS
   --legacy          Set project as legacy
 
 EXAMPLES
-  $ gh project-manager view issues org 1
-  $ gh project-manager view issues repo 25 --legacy
-  $ gh project-manager view issues user 98 --legacy
+  $ gh project-manager view issues
+  $ gh project-manager view issues --project-type user --project-num 1
+  $ gh project-manager view issues --project-type repo --project-num 1
+  $ gh project-manager view issues --project-type org --project-num 1 --legacy
 
 LEARN MORE
   Use 'gh project-manager view <command> --help' for more information about a command.
