@@ -18,7 +18,7 @@ FLAGS
 
 EXAMPLES
   $ gh project-manager init
-  $ gh project-manager view issues --project-type user --project-num 4 --legacy > issues.json
+  $ gh project-manager view issues --project-type user --project-num 4 --status "In progress" --legacy > issues.json
   $ gh project-manager add issues --project-type org --project-num 1 --path issues.json
 
 LEARN MORE
