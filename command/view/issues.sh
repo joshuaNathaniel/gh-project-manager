@@ -15,6 +15,7 @@ COMMANDS
 
 FLAGS
   --help, -h        Show help for command
+  --owner           Set the owner
   --legacy          Set project as legacy
   --project-num     Set project number
   --project-type    Set project number
@@ -22,7 +23,7 @@ FLAGS
 
 EXAMPLES
   $ gh project-manager view issues
-  $ gh project-manager view issues --project-type org --project-num 1
+  $ gh project-manager view issues --project-type org --project-num 1 --owner gh-user
   $ gh project-manager view issues --project-type repo --project-num 25 --status "In progress" --status "Done"
   $ gh project-manager view issues --project-type user --project-num 98 --legacy --status "To do"
 
@@ -94,6 +95,10 @@ while [ $# -gt 0 ]; do
     fi
     shift
     ;;
+  --owner)
+    OWNER=$2
+    shift
+    ;;
   --project-type)
     if [ "$2" == org ]; then
       PROJECT_TYPE=organization
@@ -133,4 +138,4 @@ if [ -z "$PROJECT_NUM" ]; then
   showProjectNumberPrompt
 fi
 
-exec "$BASEDIR"/issues/"$PROJECT_TYPE".sh "$PROJECT_NUM" "$LEGACY" "$STATUS_TYPES"
+exec "$BASEDIR"/issues/"$PROJECT_TYPE".sh "$PROJECT_NUM" "$LEGACY" "$STATUS_TYPES" "$OWNER"
