@@ -38,5 +38,5 @@ To save the project you must give it a name.
 Press any key to continue...
 EOF
 
-read
+read -r
 open https://github.com/$PROJECT_TYPE/"$REPO_OWNER"/projects/new?type=beta
