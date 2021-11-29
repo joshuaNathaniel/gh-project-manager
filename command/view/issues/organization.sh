@@ -4,6 +4,13 @@ set -e
 OWNER=$(gh repo view --json owner --jq .owner.login)
 PROJECT_NUM=$1
 LEGACY=$2
+STATUS_TYPES=$3
+
+if [ -z "$STATUS_TYPES" ]; then
+  SELECT_BY_STATUS=
+else
+  SELECT_BY_STATUS="| select(.status==($STATUS_TYPES))"
+fi
 
 if [ "$LEGACY" == true ]; then
   QUERY="
@@ -36,7 +43,7 @@ if [ "$LEGACY" == true ]; then
       }
     }"
 
-  exec gh api graphql -f query="${QUERY}" --paginate -F org="$OWNER" -F projectNum="$PROJECT_NUM" -q "[.data.organization.project.columns.nodes[] as \$columns | \$columns.cards.nodes[] | select(.content != null) | {id: .content.id, title: .content.title, status: \$columns.name}]"
+  exec gh api graphql -f query="${QUERY}" --paginate -F org="$OWNER" -F projectNum="$PROJECT_NUM" -q "[.data.organization.project.columns.nodes[] as \$columns | \$columns.cards.nodes[] | select(.content != null) | {id: .content.id, title: .content.title, status: \$columns.name}] $SELECT_BY_STATUS"
 else
    QUERY="
      query(\$org: String!, \$projectNum: Int!, \$endCursor: String) {
@@ -72,5 +79,5 @@ else
        }
      }"
 
-  exec gh api graphql -f query="${QUERY}" --paginate -F org="$OWNER" -F projectNum="$PROJECT_NUM" -q ".data.organization.projectNext as \$project | \$project.fields.nodes[] | select(.name == \"Status\") | . as \$field | .settings | fromjson | . as \$settings | {id: \$field.id, name: \$field.name, settings: \$settings} as \$status | \$project.items.nodes as \$cards | \$cards | map({id: .content.id, title: .content.title, status: (.fieldValues.nodes[] | select(.projectField.id == \$status.id) as \$setting | \$settings.options[] | select(.id == \$setting.value)| .name) })"
+  exec gh api graphql -f query="${QUERY}" --paginate -F org="$OWNER" -F projectNum="$PROJECT_NUM" -q "[.data.organization.projectNext as \$project | \$project.fields.nodes[] | select(.name == \"Status\") | . as \$field | .settings | fromjson | . as \$settings | {id: \$field.id, name: \$field.name, settings: \$settings} as \$status | \$project.items.nodes as \$cards | \$cards | map({id: .content.id, title: .content.title, status: (.fieldValues.nodes[] | select(.projectField.id == \$status.id) as \$setting | \$settings.options[] | select(.id == \$setting.value)| .name) }) | .[] $SELECT_BY_STATUS]"
 fi

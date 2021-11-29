@@ -18,12 +18,14 @@ FLAGS
   --legacy          Set project as legacy
   --project-num     Set project number
   --project-type    Set project number
+  --status          Set status of issues you would like to view
 
 EXAMPLES
   $ gh project-manager view issues
   $ gh project-manager view issues --project-type org --project-num 1
-  $ gh project-manager view issues --project-type repo --project-num 25
-  $ gh project-manager view issues --project-type user --project-num 98 --legacy
+  $ gh project-manager view issues --project-type repo --project-num 25 --status "In progress" --status "Done"
+  $ gh project-manager view issues --project-type user --project-num 98 --legacy --status "To do"
+
 
 LEARN MORE
   Use 'gh project-manager view issues <command> --help' for more information about a command.
@@ -35,6 +37,7 @@ BASEDIR=$(dirname "$0")
 LEGACY=false
 PROJECT_TYPE=
 PROJECT_NUM=
+STATUS_TYPES=
 
 showProjectTypeMenu() {
   PS3="#: "
@@ -83,6 +86,14 @@ while [ $# -gt 0 ]; do
   --legacy)
     LEGACY=true
     ;;
+  --status)
+    if [ -z "$STATUS_TYPES" ]; then
+      STATUS_TYPES="\"$2\""
+    else
+      STATUS_TYPES="\"$2\", $STATUS_TYPES"
+    fi
+    shift
+    ;;
   --project-type)
     if [ "$2" == org ]; then
       PROJECT_TYPE=organization
@@ -122,4 +133,4 @@ if [ -z "$PROJECT_NUM" ]; then
   showProjectNumberPrompt
 fi
 
-exec "$BASEDIR"/issues/"$PROJECT_TYPE".sh "$PROJECT_NUM" "$LEGACY"
+exec "$BASEDIR"/issues/"$PROJECT_TYPE".sh "$PROJECT_NUM" "$LEGACY" "$STATUS_TYPES"
