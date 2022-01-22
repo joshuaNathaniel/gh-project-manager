@@ -19,7 +19,9 @@ FLAGS
   --legacy          Set project as legacy
   --project-num     Set project number
   --project-type    Set project number
+  --state           Set the issue state (open, closed) you would like to view
   --status          Set status of issues you would like to view
+  --field            Set additional field by name to view (beta only)
 
 EXAMPLES
   $ gh project-manager view issues
@@ -39,6 +41,8 @@ LEGACY=false
 PROJECT_TYPE=
 PROJECT_NUM=
 STATUS_TYPES=
+STATE=
+FIELDS=
 
 showProjectTypeMenu() {
   PS3="#: "
@@ -84,8 +88,20 @@ showProjectNumberPrompt() {
 
 while [ $# -gt 0 ]; do
   case "$1" in
+  --field)
+    if [ -z "$FIELDS" ]; then
+      FIELDS="\"$2\""
+    else
+      FIELDS="\"$2\", $FIELDS"
+    fi
+    shift
+    ;;
   --legacy)
     LEGACY=true
+    ;;
+  --state)
+      STATE=$2
+    shift
     ;;
   --status)
     if [ -z "$STATUS_TYPES" ]; then
@@ -138,4 +154,4 @@ if [ -z "$PROJECT_NUM" ]; then
   showProjectNumberPrompt
 fi
 
-exec "$BASEDIR"/issues/"$PROJECT_TYPE".sh "$PROJECT_NUM" "$LEGACY" "$STATUS_TYPES" "$OWNER"
+exec "$BASEDIR"/issues/"$PROJECT_TYPE".sh "$PROJECT_NUM" "$LEGACY" "$STATUS_TYPES" "$OWNER" "$STATE" "$FIELDS"
