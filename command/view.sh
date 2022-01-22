@@ -13,7 +13,6 @@ COMMANDS
 
 FLAGS
   --help, -h        Show help for command
-  --legacy          Set project as legacy
 
 EXAMPLES
   $ gh project-manager view issues
