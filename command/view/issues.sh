@@ -21,12 +21,12 @@ FLAGS
   --project-type    Set project number
   --state           Set the issue state (open, closed) you would like to view
   --status          Set status of issues you would like to view
-  --field            Set additional field by name to view (beta only)
 
 EXAMPLES
   $ gh project-manager view issues
   $ gh project-manager view issues --project-type org --project-num 1 --owner gh-user
-  $ gh project-manager view issues --project-type repo --project-num 25 --status "In progress" --status "Done"
+  $ gh project-manager view issues --project-type repo --project-num 25 --status "In progress" --status Done
+  $ gh project-manager view issues --project-type org --project-num 111 --owner my-org --status Done --state OPEN
   $ gh project-manager view issues --project-type user --project-num 98 --legacy --status "To do"
 
 
@@ -42,7 +42,6 @@ PROJECT_TYPE=
 PROJECT_NUM=
 STATUS_TYPES=
 STATE=
-FIELDS=
 
 showProjectTypeMenu() {
   PS3="#: "
@@ -88,14 +87,6 @@ showProjectNumberPrompt() {
 
 while [ $# -gt 0 ]; do
   case "$1" in
-  --field)
-    if [ -z "$FIELDS" ]; then
-      FIELDS="\"$2\""
-    else
-      FIELDS="\"$2\", $FIELDS"
-    fi
-    shift
-    ;;
   --legacy)
     LEGACY=true
     ;;
@@ -154,4 +145,4 @@ if [ -z "$PROJECT_NUM" ]; then
   showProjectNumberPrompt
 fi
 
-exec "$BASEDIR"/issues/"$PROJECT_TYPE".sh "$PROJECT_NUM" "$LEGACY" "$STATUS_TYPES" "$OWNER" "$STATE" "$FIELDS"
+exec "$BASEDIR"/issues/"$PROJECT_TYPE".sh "$PROJECT_NUM" "$LEGACY" "$STATUS_TYPES" "$OWNER" "$STATE"

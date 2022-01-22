@@ -11,12 +11,12 @@ PROJECT_NUM=$1
 LEGACY=$2
 STATUS_TYPES=$3
 STATE=$5
-FIELDS=$6
 
 if [ -z "$STATUS_TYPES" ]; then
   SELECT_BY_STATUS=
 else
-  SELECT_BY_STATUS="| select(.status==($STATUS_TYPES))"
+  SELECT_BY_STATUS="| select(.Status.name==($STATUS_TYPES))"
+  SELECT_BY_STATUS_LEGACY="| select(.status==($STATUS_TYPES))"
 fi
 
 if [ -z "$STATE" ]; then
@@ -46,6 +46,7 @@ if [ "$LEGACY" == true ]; then
                     ... on Issue {
                       id
                       title
+                      state
                     }
                   }
                 }
@@ -56,8 +57,7 @@ if [ "$LEGACY" == true ]; then
       }
     }"
 
-  # TODO: Add issue state
-  exec gh api graphql -f query="${QUERY}" --paginate -F org="$OWNER" -F projectNum="$PROJECT_NUM" -q "[.data.organization.project.columns.nodes[] as \$columns | \$columns.cards.nodes[] | select(.content != null) | {id: .content.id, title: .content.title, status: \$columns.name}] $SELECT_BY_STATUS"
+  exec gh api graphql -f query="${QUERY}" --paginate -F org="$OWNER" -F projectNum="$PROJECT_NUM" -q "[.data.organization.project.columns.nodes[] as \$columns | \$columns.cards.nodes[] | select(.content != null) | {id: .content.id, title: .content.title, state: .content.state, status: \$columns.name}] $SELECT_BY_STATUS_LEGACY $SELECT_BY_STATE"
 else
    QUERY="
      query(\$org: String!, \$projectNum: Int!, \$endCursor: String) {
@@ -94,5 +94,59 @@ else
        }
      }"
 
-  exec gh api graphql -f query="${QUERY}" --paginate -F org="$OWNER" -F projectNum="$PROJECT_NUM" -q "[.data.organization.projectNext as \$project | \$project.fields.nodes[] | select(.name == \"Status\") | . as \$field | .settings | fromjson | . as \$settings | {id: \$field.id, name: \$field.name, settings: \$settings} as \$status | \$project.items.nodes as \$cards | \$cards | map({id: .content.id, title: .content.title, state: .content.state, status: (.fieldValues.nodes[] | select(.projectField.id == \$status.id) as \$setting | \$settings.options[] | select(.id == \$setting.value)| .name) }) | .[] $SELECT_BY_STATUS $SELECT_BY_STATE]"
+  parser="[
+    .data.organization.projectNext as \$project
+
+    # map fields
+    | \$project.fields.nodes
+    | map({id, name, settings: (.settings
+    | fromjson)})
+    | reduce .[] as \$field ({}; .[\$field.id] = {
+        name: \$field.name,
+        settings: (
+          if \$field.settings == null then
+            null
+          elif \$field.settings.configuration != null then
+            (
+              [\$field.settings.configuration.completed_iterations[], \$field.settings.configuration.iterations[]]
+              | reduce .[] as \$iteration ({}; .[\$iteration.id] = {
+                  duration: \$iteration.duration,
+                  title: \$iteration.title,
+                  start_date: \$iteration.start_date
+                })
+            )
+          elif \$field.settings.options != null then
+            (
+              \$field.settings.options
+              | reduce .[] as \$option ({}; .[\$option.id] = {
+                  name: \$option.name
+                })
+            )
+          else
+            \$field.settings
+          end
+        )
+      })
+    | . as \$fieldMap
+
+    # map items
+    | \$project.items.nodes
+    | map({fields: .fieldValues.nodes, content})
+    | map({fields: (.fields | reduce .[] as \$field ({}; .[\$fieldMap[\$field.projectField.id].name] =
+      (
+        if \$fieldMap[\$field.projectField.id].settings == null then
+          \$field.value
+        elif (\$fieldMap[\$field.projectField.id].settings[\$field.value] != null) then
+          \$fieldMap[\$field.projectField.id].settings[\$field.value]
+        else
+          null
+        end
+      )
+    )), content})
+    | map(.content+.fields)
+    | .[]
+    $SELECT_BY_STATUS $SELECT_BY_STATE
+    ]"
+
+  exec gh api graphql -f query="${QUERY}" --paginate -F org="$OWNER" -F projectNum="$PROJECT_NUM" -q "$parser"
 fi
