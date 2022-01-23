@@ -21,13 +21,14 @@ FLAGS
   --project-type    Set project number
   --state           Set the issue state (open, closed) you would like to view
   --status          Set status of issues you would like to view
+  --sprint          Set sprint of issues you would like to view (beta only)
 
 EXAMPLES
   $ gh project-manager view issues
   $ gh project-manager view issues --project-type org --project-num 1 --owner gh-user
   $ gh project-manager view issues --project-type repo --project-num 25 --status "In progress" --status Done
   $ gh project-manager view issues --project-type org --project-num 111 --owner my-org --status Done --state OPEN
-  $ gh project-manager view issues --project-type user --project-num 98 --legacy --status "To do"
+  $ gh project-manager view issues --project-type user --project-num 98 --legacy --status "To do" --sprint "Sprint 1"
 
 
 LEARN MORE
@@ -42,6 +43,7 @@ PROJECT_TYPE=
 PROJECT_NUM=
 STATUS_TYPES=
 STATE=
+SPRINT=
 
 showProjectTypeMenu() {
   PS3="#: "
@@ -91,7 +93,7 @@ while [ $# -gt 0 ]; do
     LEGACY=true
     ;;
   --state)
-      STATE=$2
+    STATE=$2
     shift
     ;;
   --status)
@@ -100,6 +102,10 @@ while [ $# -gt 0 ]; do
     else
       STATUS_TYPES="\"$2\", $STATUS_TYPES"
     fi
+    shift
+    ;;
+  --sprint)
+    SPRINT=$2
     shift
     ;;
   --owner)
@@ -145,4 +151,4 @@ if [ -z "$PROJECT_NUM" ]; then
   showProjectNumberPrompt
 fi
 
-exec "$BASEDIR"/issues/"$PROJECT_TYPE".sh "$PROJECT_NUM" "$LEGACY" "$STATUS_TYPES" "$OWNER" "$STATE"
+exec "$BASEDIR"/issues/"$PROJECT_TYPE".sh "$PROJECT_NUM" "$LEGACY" "$STATUS_TYPES" "$OWNER" "$STATE" "$SPRINT"

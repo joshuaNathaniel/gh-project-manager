@@ -11,6 +11,7 @@ PROJECT_NUM=$1
 LEGACY=$2
 STATUS_TYPES=$3
 STATE=$5
+SPRINT=$6
 
 if [ -z "$STATUS_TYPES" ]; then
   SELECT_BY_STATUS=
@@ -23,6 +24,12 @@ if [ -z "$STATE" ]; then
   SELECT_BY_STATE=
 else
   SELECT_BY_STATE="| select(.state==\"$STATE\")"
+fi
+
+if [ -z "$SPRINT" ]; then
+  SELECT_BY_SPRINT=
+else
+  SELECT_BY_SPRINT="| select(.Sprint.title==\"$SPRINT\")"
 fi
 
 if [ "$LEGACY" == true ]; then
@@ -73,6 +80,7 @@ else
            }
            items(first:100, after:\$endCursor ) {
              nodes {
+               id
                fieldValues(first: 100) {
                  nodes {
                    value
@@ -131,8 +139,8 @@ else
 
     # map items
     | \$project.items.nodes
-    | map({fields: .fieldValues.nodes, content})
-    | map({fields: (.fields | reduce .[] as \$field ({}; .[\$fieldMap[\$field.projectField.id].name] =
+    | map({id, fields: .fieldValues.nodes, content})
+    | map({id, fields: (.fields | reduce .[] as \$field ({}; .[\$fieldMap[\$field.projectField.id].name] =
       (
         if \$fieldMap[\$field.projectField.id].settings == null then
           \$field.value
@@ -143,9 +151,9 @@ else
         end
       )
     )), content})
-    | map(.content+.fields)
+    | map({item: {id: .id}}+.content+.fields)
     | .[]
-    $SELECT_BY_STATUS $SELECT_BY_STATE
+    $SELECT_BY_STATUS $SELECT_BY_STATE $SELECT_BY_SPRINT
     ]"
 
   exec gh api graphql -f query="${QUERY}" --paginate -F org="$OWNER" -F projectNum="$PROJECT_NUM" -q "$parser"
