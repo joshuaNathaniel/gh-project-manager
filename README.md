@@ -9,7 +9,7 @@ gh extension install jnmiller-va/gh-project-manager
 ## Features
 - Initiate a project from your repo via organization or user.
 - Add your existing issues from a legacy project to your new project (beta).
-- Update project fields and state on issues.
+- Update project fields on issues.
 
 ## Manual
 ```
