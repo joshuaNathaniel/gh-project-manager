@@ -30,9 +30,10 @@ FLAGS
 EXAMPLES
   $ gh project-manager init
   $ gh project-manager view issues --project-type user --project-num 4 --status "In progress" --state OPEN --legacy > issues.json
+  $ gh project-manager view issues --project-type org --project-num 111 --status "In progress" --state OPEN --sprint "Sprint 1"
   $ gh project-manager add issues --project-type org --project-num 1 --path issues.json
-  $ gh project-manager update issue --project-type org --project-num 1 --issue-num 25 --field Sprint --value current
-
+  $ gh project-manager update issues --project-type org --project-num 1 --field Sprint --value current --path issues.json
+  
 LEARN MORE
   Use 'gh project-manager <command> --help' for more information about a command.
   Read the documentation at https://github.com/jnmiller-va/gh-project-manager
