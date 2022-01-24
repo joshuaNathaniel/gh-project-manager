@@ -19,6 +19,7 @@ FLAGS
 EXAMPLES
   $ gh project-manager add issues --project-type org --project-num 1 --field Status --value Done --path ./data.json
   $ gh project-manager add issues --project-type user --project-num 98 --field Sprint --value current --path /etc/data.json
+  $ gh project-manager add issues --project-type user --project-num 98 --field Sprint --value next --path /etc/data.json
 
 LEARN MORE
   Use 'gh project-manager add issues <command> --help' for more information about a command.
@@ -169,7 +170,22 @@ OPTIONS=$(echo "$QUERIED_PROJECT" | jq "
           null
         elif \$field.settings.configuration != null then
           (
-            [\$field.settings.configuration.completed_iterations[], \$field.settings.configuration.iterations[]]
+            [
+              {
+                title: \"current\",
+                duration: \$field.settings.configuration.iterations[0].duration,
+                id: \$field.settings.configuration.iterations[0].id,
+                start_date: \$field.settings.configuration.iterations[0].start_date
+              },
+              {
+                title: \"next\",
+                duration: \$field.settings.configuration.iterations[1].duration,
+                id: \$field.settings.configuration.iterations[1].id,
+                start_date: \$field.settings.configuration.iterations[1].start_date
+              },
+              \$field.settings.configuration.iterations[],
+              \$field.settings.configuration.completed_iterations[]
+            ]
             | reduce .[] as \$iteration ({}; .[\$iteration.title] = {
                 duration: \$iteration.duration,
                 id: \$iteration.id,
@@ -189,7 +205,6 @@ OPTIONS=$(echo "$QUERIED_PROJECT" | jq "
       )
     })
   ")
-
 
 UPDATE_ISSUE_MUTATION="
   mutation(\$projectId: ID!, \$itemId: ID!, \$fieldId: ID!, \$fieldVal: String!) {
