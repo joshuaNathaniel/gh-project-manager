@@ -12,14 +12,17 @@ COMMANDS
   add:              Add issues to project
   init:             Initialize a new project
   view:             View project specific properties and children
+  update:           Update project specific properties and children
 
 FLAGS
   --help, -h        Show help for command
 
 EXAMPLES
   $ gh project-manager init
-  $ gh project-manager view issues --project-type user --project-num 4 --status "In progress" --legacy > issues.json
+  $ gh project-manager view issues --project-type user --project-num 4 --status "In progress" --state OPEN --legacy > issues.json
+  $ gh project-manager view issues --project-type org --project-num 111 --status "In progress" --state OPEN --sprint "Sprint 1"
   $ gh project-manager add issues --project-type org --project-num 1 --path issues.json
+  $ gh project-manager update issues --project-type org --project-num 1 --field Sprint --value current --path issues.json
 
 LEARN MORE
   Use 'gh project-manager <command> --help' for more information about a command.
@@ -29,7 +32,7 @@ EOF
 
 BASEDIR=$(dirname "$0")
 
-if [ "$1" == init ] || [ "$1" == view ] || [ "$1" == add ]; then
+if [ "$1" == init ] || [ "$1" == view ] || [ "$1" == add ] || [ "$1" == update ]; then
   command=$1
   shift
   exec "$BASEDIR"/command/"$command".sh "$@"
