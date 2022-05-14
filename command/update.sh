@@ -20,7 +20,7 @@ EXAMPLES
 
 LEARN MORE
   Use 'gh project-manager view <command> --help' for more information about a command.
-  Read the documentation at https://github.com/jnmiller-va/gh-project-manager
+  Read the documentation at https://github.com/rise8-us/gh-project-manager
 EOF
 }
 

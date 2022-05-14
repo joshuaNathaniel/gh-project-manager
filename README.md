@@ -3,7 +3,7 @@ GitHub CLI Extension for Project(beta) Management
 
 ## Install
 ```sh
-gh extension install jnmiller-va/gh-project-manager
+gh extension install rise8-us/gh-project-manager
 ```
 
 ## Features
@@ -37,5 +37,8 @@ EXAMPLES
   
 LEARN MORE
   Use 'gh project-manager <command> --help' for more information about a command.
-  Read the documentation at https://github.com/jnmiller-va/gh-project-manager
+  Read the documentation at https://github.com/rise8-us/gh-project-manager
 ```
+
+## Careers
+Explore new opportunities with [Rise8](https://rise8.us/careers/).
