@@ -39,6 +39,3 @@ LEARN MORE
   Use 'gh project-manager <command> --help' for more information about a command.
   Read the documentation at https://github.com/rise8-us/gh-project-manager
 ```
-
-## Careers
-Explore new opportunities with [Rise8](https://rise8.us/careers/).
